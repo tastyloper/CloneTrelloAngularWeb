@@ -1,5 +1,9 @@
-<app-header [colors]="colors" [colorBoolean]="colorBoolean" (changeBgColor)="changeBgColor($event)"
-  (bgColorState)="colorBoolean = $event"></app-header>
+<app-header
+  [colors]="colors"
+  [colorBoolean]="colorBoolean"
+  (changeBgColor)="changeBgColor($event)"
+  (bgColorState)="colorBoolean = $event"
+></app-header>
 
 <section class="board-wrap">
     <div class="list-wrap">
@@ -22,7 +26,7 @@
                 [cdkDragData]="card" (mousedown)="boxPlaceholderHeight($event.target)">
                 <div class="vertical-placeholder" *cdkDragPlaceholder [style.height]="verticalBoxHeight + 'px'"></div>
                 <a href="#" class="vertical-box-link" mat-raised-button
-                  (click)="openDialog(card.description, card.title, card.id, card, list.id)">{{card.cardTitle}}</a>
+                (click)="getCard(card.id)">{{card.cardTitle}}</a>
                 <span class="remove-card-btn" (click)="removeSnackBar(list.id, card.id, true)"><i class="fa fa-trash-o"></i></span>
               </div>
               <div class="card-composer is-hidden" #cardComposer>
@@ -33,23 +37,61 @@
                 </div>
                 <a href="#" class="add-btn" (click)="addCardTitle(listCardComposerTextarea)">Add Card</a>
                 <a href="#" class="cancle-btn" (click)="hideAddCard(cardComposer, addCardBtn)"><i class="fa fa-times"></i></a>
+
               </div>
+              <a
+                href="#"
+                class="add-btn"
+                (click)="addCardTitle(listCardComposerTextarea)"
+                >Add Card</a
+              >
+              <a
+                href="#"
+                class="cancle-btn"
+                (click)="hideAddCard(cardComposer, addCardBtn)"
+                ><i class="fa fa-times"></i
+              ></a>
             </div>
-            <a href="#" class="add-card-btn" (click)="showAddCard(cardComposer, addCardBtn, listCardComposerTextarea)" #addCardBtn><i class="fa fa-plus"></i> Add Card</a>
           </div>
+          <a
+            href="#"
+            class="add-card-btn"
+            (click)="
+              showAddCard(cardComposer, addCardBtn, listCardComposerTextarea)
+            "
+            #addCardBtn
+            ><i class="fa fa-plus"></i> Add Card</a
+          >
         </div>
       </div>
     </div>
-    <div class="list-wrap">
-      <a href="#" class="add-list-btn" (click)="addListOpen = !addListOpen" *ngIf="addListOpen; else titleInput">
-        <i class="fa fa-plus"></i> Add List
-      </a>
-      <ng-template #titleInput>
-        <div class="add-list-wrap">
-          <input type="text" class="list-title-input" (keyup.enter)="addList(listTitleInput)" autofocus #listTitleInput placeholder="Enter list title...">
-          <a href="#" class="add-btn" (click)="addList(listTitleInput)">Add List</a>
-          <a href="#" class="cancle-btn" (click)="addListOpen = !addListOpen"><i class="fa fa-times"></i></a>
-        </div>
-      </ng-template>
-    </div>
-  </section>
+  </div>
+  <div class="list-wrap">
+    <a
+      href="#"
+      class="add-list-btn"
+      (click)="addListOpen = !addListOpen"
+      *ngIf="addListOpen; else titleInput"
+    >
+      <i class="fa fa-plus"></i> Add List
+    </a>
+    <ng-template #titleInput>
+      <div class="add-list-wrap">
+        <input
+          type="text"
+          class="list-title-input"
+          (keyup.enter)="addList(listTitleInput)"
+          autofocus
+          #listTitleInput
+          placeholder="Enter list title..."
+        />
+        <a href="#" class="add-btn" (click)="addList(listTitleInput)"
+          >Add List</a
+        >
+        <a href="#" class="cancle-btn" (click)="addListOpen = !addListOpen"
+          ><i class="fa fa-times"></i
+        ></a>
+      </div>
+    </ng-template>
+  </div>
+</section>

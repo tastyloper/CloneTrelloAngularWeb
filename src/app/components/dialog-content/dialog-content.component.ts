@@ -1,12 +1,17 @@
-import { Component, EventEmitter, Inject } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { Card } from 'src/app/core/interface/list.interface';
+import { CardService } from 'src/app/core/service/card.service';
 
 @Component({
   selector: 'app-dialog-content',
   templateUrl: './dialog-content.component.html',
   styleUrls: ['./dialog-content.component.css']
 })
-export class DialogContentComponent {
+export class DialogContentComponent implements OnInit {
+  appUrl: string = environment.appUrl;
   updateData = {};
   updateData2 = {};
   onAdd = new EventEmitter();
@@ -18,8 +23,23 @@ export class DialogContentComponent {
 
   constructor(
     public dialogRef: MatDialogRef<DialogContentComponent>,
-    @Inject(MAT_DIALOG_DATA) public data
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: { cardId: number },
+    private http: HttpClient,
+    public cardService: CardService
+  ) {}
+
+  ngOnInit() {
+    this.getCards();
+  }
+
+  getCards() {
+    this.http
+      .get(`${this.appUrl}card/${this.data.cardId}/`)
+      .subscribe((card: Card) => {
+        console.log(card);
+        this.cardService.card = { ...card, id: this.data.cardId };
+      });
+  }
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -60,7 +80,6 @@ export class DialogContentComponent {
       Item: wholeItem,
       TodosID: TodoID
     };
-    console.log(this.updateData2);
     this.changeCardContent.emit(this.updateData2);
   }
 
@@ -73,7 +92,42 @@ export class DialogContentComponent {
     textarea.style.height = `${textarea.scrollHeight}px`;
   }
 
-  clickDescriptionBtn() {
-    console.log(1);
+  clickDescriptionBtn(descriptionInput: HTMLTextAreaElement, cardId: number) {
+    this.http
+      .patch(`${this.appUrl}card/${cardId}/`, {
+        description: descriptionInput.value
+      })
+      .subscribe(() => this.getCards());
+  }
+
+  changeTitle(titleInput: HTMLInputElement, cardId: number) {
+    this.http
+      .patch(`${this.appUrl}card/${cardId}/`, {
+        cardTitle: titleInput.value
+      })
+      .subscribe(() => this.getCards());
+  }
+
+  addComment(inputComment: HTMLInputElement, cardId: number) {
+    this.http
+      .post(`${this.appUrl}comments/`, {
+        comment: inputComment.value,
+        card: cardId
+      })
+      .subscribe(() => this.getCards());
+  }
+
+  activityEditSave(activityEdit: HTMLTextAreaElement, commentID: number) {
+    this.http
+      .patch(`${this.appUrl}comments/${commentID}/`, {
+        comment: activityEdit.value
+      })
+      .subscribe(() => this.getCards());
+  }
+
+  activityEditDelete(commentID: number) {
+    this.http
+      .delete(`${this.appUrl}comments/${commentID}/`)
+      .subscribe(() => this.getCards());
   }
 }
