@@ -1,19 +1,21 @@
 export interface List {
-  listSort: number;
   id: number;
   title: string;
+  listSort: number;
   cards: Array<Card>;
 }
 
 export interface Card {
-  cardSort: number;
-  cardId: number;
+  title: number;
+  id?: number;
   cardTitle: string;
-  cardContent: string;
+  description: string | null;
   comments: Array<Comment>;
+  cardSort: number;
 }
 
 export interface Comment {
-  commentId: number;
-  commentContent: string;
+  id: number;
+  comment: string;
+  card: number;
 }

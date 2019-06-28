@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2, Input, Output, EventEmitter } from '@angular/core';
+import { BgColors } from 'src/app/core/type/bg-color';
 
 @Component({
   selector: 'app-header',
@@ -12,4 +13,8 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
   }
 
+  @Input() colors: BgColors[];
+  @Input() colorBoolean: boolean;
+  @Output() changeBgColor = new EventEmitter();
+  @Output() bgColorState = new EventEmitter();
 }

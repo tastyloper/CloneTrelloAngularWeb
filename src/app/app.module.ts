@@ -11,15 +11,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { TrelloComponent } from './components/trello/trello.component';
 import { HeaderComponent } from './components/header/header.component';
-import { ListComponent } from './components/list/list.component';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
+import { CardService } from './core/service/card.service';
+
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
     AppComponent,
     TrelloComponent,
     HeaderComponent,
-    ListComponent,
     DialogContentComponent
   ],
   imports: [
@@ -30,10 +31,11 @@ import { DialogContentComponent } from './components/dialog-content/dialog-conte
     MatCardModule,
     MatDialogModule,
     MatSnackBarModule,
-    HttpClientModule
+    HttpClientModule,
+    MatProgressSpinnerModule
   ],
-  entryComponents: [],
-  providers: [],
+  entryComponents: [TrelloComponent, DialogContentComponent],
+  providers: [CardService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
