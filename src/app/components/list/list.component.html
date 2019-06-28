@@ -2,5 +2,15 @@
   <div class="list-wrap">
   </div>
   <div class="list-wrap">
+    <a href="#" class="add-list-btn" (click)="addListOpen = !addListOpen" *ngIf="addListOpen; else titleInput">
+      <i class="fa fa-plus"></i> Add List
+    </a>
+    <ng-template #titleInput>
+      <div class="add-list-wrap">
+        <input type="text" class="list-title-input" (keyup.enter)="addList(listTitleInput)" autofocus #listTitleInput placeholder="Enter list title...">
+        <a href="#" class="add-btn" (click)="addList(listTitleInput)">Add List</a>
+        <a href="#" class="cancle-btn" (click)="addListOpen = !addListOpen"><i class="fa fa-times"></i></a>
+      </div>
+    </ng-template>
   </div>
 </section>
