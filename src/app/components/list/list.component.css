@@ -1,0 +1,15 @@
+.board-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: absolute;
+  top: 84px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  white-space: nowrap;
+}
+.list-wrap {
+  display: inline-block;
+  height: 100%;
+  vertical-align: top;
+}
