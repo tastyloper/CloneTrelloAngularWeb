@@ -1,6 +1,102 @@
-<h2 mat-dialog-title>Install Angular</h2>
-<mat-dialog-content class="mat-typography"> </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
-</mat-dialog-actions>
+<h1 mat-dialog-title>
+  <i class="fa fa-list-alt" aria-hidden="true"></i>
+  <label for="title" class="titleLabel">Title: </label>
+  <br />
+  <input value="{{ data.title }}" #titleInput class="titleInput" id="title" />
+</h1>
+<mat-dialog-content class="mat-typography">
+  <i class="fa fa-list" aria-hidden="true"></i>
+  <label for="description" class="label">Description: </label>
+  <br />
+  <textarea
+    id="description"
+    class="descriptionInputs"
+    #descriptionInput
+    value="{{ data.content }}"
+    (focusin)="changeDescriptionState(descriptionInput)"
+    (focusout)="changeDescriptionState(descriptionInput)"
+    (keyup)="titleResize(descriptionInput)"
+    (keyup)="changeContent(descriptionInput, data.id, data.item, data.TodoId)"
+    placeholder="Add a more detailed description…"
+    autofocus
+  >
+  </textarea>
+  <button
+    class="descriptionBtnHidden"
+    [class.descriptionBtnDisplay]="!descriptionState"
+    (mousedown)="clickDescriptionBtn()"
+  >
+    Save
+  </button>
+
+  <br />
+  <i class="fa fa-comments-o" aria-hidden="true"></i>
+  <label for="comment" class="label">Add Comment: </label>
+  <br />
+  <input
+    id="comment"
+    #inputComment
+    class="commentInputs"
+    autocomplete="off"
+    placeholder="Write a comment..."
+    (input)="typing(inputComment)"
+  />
+  <button
+    class="commentBtn"
+    [class.commentBtnAct]="valueTrue"
+    [disabled]="!valueTrue"
+  >
+    Save
+  </button>
+  <br />
+  <i class="fa fa-list-ul" aria-hidden="true"></i>
+  <label for="Activity" class="label">Activity: </label>
+  <br />
+  <div *ngFor="let comment of data.comment">
+    <textarea
+      class="activityComment"
+      value="{{ comment.commentContent }}"
+      [disabled]="comment.commentId !== flag"
+    >
+    </textarea>
+    <button
+      class="activitySaveBtn"
+      [class.activitySaveBtnAct]="comment.commentId === flag"
+    >
+      Save
+    </button>
+    <button
+      class="activityCancelBtn"
+      [class.activityCancelBtnAct]="comment.commentId === flag"
+    >
+      <i class="fa fa-times" aria-hidden="true"></i>
+    </button>
+    <div>
+      <span class="editDelete" (click)="flag = comment.commentId">Edit</span>
+      <span class="editDelete">Delete</span>
+    </div>
+  </div>
+  <!-- <span>
+      Card ID: <span #cardId>{{ data.id }}</span>
+    </span> -->
+</mat-dialog-content>
+<!-- <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button
+      mat-button
+      [mat-dialog-close]=""
+      cdkFocusInitial
+      (click)="
+        sendData(
+          descriptionInput,
+          inputComment,
+          cardId,
+          data.item,
+          data.TodoId,
+          titleInput
+        )
+      "
+    >
+      Save
+    </button>
+  </mat-dialog-actions> -->
