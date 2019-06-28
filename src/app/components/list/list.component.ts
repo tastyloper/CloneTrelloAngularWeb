@@ -30,8 +30,13 @@ export class ListComponent implements OnInit {
 
   horizontalDrop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
-    this.lists = this.lists.map((itme, listSort) => {
-      return { ...itme, listSort };
+    this.lists = this.lists.map((list, listSort) => {
+      if (list.listSort !== listSort) {
+        this.http.patch(`${this.appUrl}title/${list.id}/`, {
+          listSort
+        }).subscribe();
+      }
+      return { ...list, listSort };
     });
   }
 
@@ -40,7 +45,12 @@ export class ListComponent implements OnInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       this.lists = this.lists.map(list => {
         if (+event.container.id === list.id) {
-          const cards = list.cards.map((card, cardSort) => ({ ...card, cardSort}));
+          const cards = list.cards.map((card, cardSort) => {
+            this.http.patch(`${this.appUrl}card/${card.id}/`, {
+              cardSort
+            }).subscribe();
+            return { ...card, cardSort };
+          });
           return { ...list, cards };
         } else {
           return list;
@@ -55,10 +65,21 @@ export class ListComponent implements OnInit {
       );
       this.lists = this.lists.map(list => {
         if (+event.previousContainer.id === list.id) {
-          const cards = list.cards.map((card, cardSort) => ({ ...card, cardSort}));
+          const cards = list.cards.map((card, cardSort) => {
+            this.http.patch(`${this.appUrl}card/${card.id}/`, {
+              cardSort
+            }).subscribe();
+            return { ...card, cardSort };
+          });
           return { ...list, cards };
         } else if (+event.container.id === list.id) {
-          const cards = list.cards.map((card, cardSort) => ({ ...card, cardSort}));
+          const cards = list.cards.map((card, cardSort) => {
+            this.http.patch(`${this.appUrl}card/${card.id}/`, {
+              cardSort,
+              title: event.container.id
+            }).subscribe();
+            return { ...card, cardSort };
+          });
           return { ...list, cards };
         } else {
           return list;
