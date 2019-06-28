@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem
+} from '@angular/cdk/drag-drop';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { List } from 'src/app/core/interface/list.interface';
@@ -30,17 +34,31 @@ export class ListComponent implements OnInit {
 
   horizontalDrop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
-    this.lists = this.lists.map((itme, listSort) => {
-      return { ...itme, listSort };
+    this.lists = this.lists.map((list, listSort) => {
+      if (list.listSort !== listSort) {
+        this.http.patch(`${this.appUrl}title/${list.id}/`, {
+          listSort
+        }).subscribe();
+      }
+      return { ...list, listSort };
     });
   }
 
   verticalDrop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
       this.lists = this.lists.map(list => {
         if (+event.container.id === list.id) {
-          const cards = list.cards.map((card, cardSort) => ({ ...card, cardSort}));
+          const cards = list.cards.map((card, cardSort) => {
+            this.http.patch(`${this.appUrl}card/${card.id}/`, {
+              cardSort
+            }).subscribe();
+            return { ...card, cardSort };
+          });
           return { ...list, cards };
         } else {
           return list;
@@ -55,10 +73,21 @@ export class ListComponent implements OnInit {
       );
       this.lists = this.lists.map(list => {
         if (+event.previousContainer.id === list.id) {
-          const cards = list.cards.map((card, cardSort) => ({ ...card, cardSort}));
+          const cards = list.cards.map((card, cardSort) => {
+            this.http.patch(`${this.appUrl}card/${card.id}/`, {
+              cardSort
+            }).subscribe();
+            return { ...card, cardSort };
+          });
           return { ...list, cards };
         } else if (+event.container.id === list.id) {
-          const cards = list.cards.map((card, cardSort) => ({ ...card, cardSort}));
+          const cards = list.cards.map((card, cardSort) => {
+            this.http.patch(`${this.appUrl}card/${card.id}/`, {
+              cardSort,
+              title: event.container.id
+            }).subscribe();
+            return { ...card, cardSort };
+          });
           return { ...list, cards };
         } else {
           return list;
@@ -68,7 +97,9 @@ export class ListComponent implements OnInit {
   }
 
   getTodos() {
-    this.http.get<List[]>('http://clonetrelloapi.jinukk.me/main/').subscribe(lists => this.lists = lists);
+    this.http
+      .get<List[]>('http://clonetrelloapi.jinukk.me/main/')
+      .subscribe(lists => (this.lists = lists));
   }
 
   getConnectedList(): any[] {
@@ -76,15 +107,21 @@ export class ListComponent implements OnInit {
   }
 
   generateListSort() {
-    return this.lists.length ? Math.max(...this.lists.map(({ listSort }) => listSort)) : 0;
+    return this.lists.length
+      ? Math.max(...this.lists.map(({ listSort }) => listSort))
+      : 0;
   }
 
   addList(input: HTMLInputElement) {
-    if (!input.value.trim()) { return; }
-    this.http.post<List>(this.appUrl + 'title/', {
-      title: input.value,
-      listSort: this.generateListSort()
-    }).subscribe(list => this.lists = [...this.lists, list]);
+    if (!input.value.trim()) {
+      return;
+    }
+    this.http
+      .post<List>(this.appUrl + 'title/', {
+        title: input.value,
+        listSort: this.generateListSort()
+      })
+      .subscribe(list => (this.lists = [...this.lists, list]));
     input.value = '';
   }
 
@@ -95,13 +132,28 @@ export class ListComponent implements OnInit {
 
   // 카드 생성
   addCardTitle(cardInput: HTMLTextAreaElement) {
-    if (!cardInput.value.trim()) { return; }
+    if (!cardInput.value.trim()) {
+      return;
+    }
     this.lists = this.lists.map(list => {
       if (+cardInput.id === list.id) {
-        const newCardSort = list.cards.length ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) + 1 : 1;
-        return { ...list, cards: [...list.cards, {
-          title: 1, cardSort: newCardSort, id: 100, cardTitle: cardInput.value, description: '', comments: []
-        }] };
+        const newCardSort = list.cards.length
+          ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) + 1
+          : 1;
+        return {
+          ...list,
+          cards: [
+            ...list.cards,
+            {
+              title: 1,
+              cardSort: newCardSort,
+              id: 100,
+              cardTitle: cardInput.value,
+              description: '',
+              comments: []
+            }
+          ]
+        };
       } else {
         return list;
       }
@@ -121,12 +173,20 @@ export class ListComponent implements OnInit {
   }
 
   removeSnackBar(listId: number, removeCardId: number, card = false) {
-    const snackBarRef = this.snackBar.open('Are you sure you want to delete?', 'Delete', {
-      duration: 5000,
-      verticalPosition: 'top'
-    });
+    const snackBarRef = this.snackBar.open(
+      'Are you sure you want to delete?',
+      'Delete',
+      {
+        duration: 5000,
+        verticalPosition: 'top'
+      }
+    );
     snackBarRef.onAction().subscribe(() => {
-      if (card) { this.removeCard(listId, removeCardId); } else { this.removeList(listId); }
+      if (card) {
+        this.removeCard(listId, removeCardId);
+      } else {
+        this.removeList(listId);
+      }
     });
   }
 
@@ -135,7 +195,10 @@ export class ListComponent implements OnInit {
     textarea.style.height = `${textarea.scrollHeight}px`;
   }
 
-  changeTitle(verticalListHeaderTarget: HTMLDivElement, textarea: HTMLTextAreaElement) {
+  changeTitle(
+    verticalListHeaderTarget: HTMLDivElement,
+    textarea: HTMLTextAreaElement
+  ) {
     verticalListHeaderTarget.classList.add('is-hidden');
     textarea.focus();
   }
@@ -152,7 +215,11 @@ export class ListComponent implements OnInit {
     this.verticalBoxHeight = elem.scrollHeight;
   }
 
-  showAddCard(cardComposer: HTMLDivElement, addCardBtn: HTMLAnchorElement, textarea: HTMLTextAreaElement) {
+  showAddCard(
+    cardComposer: HTMLDivElement,
+    addCardBtn: HTMLAnchorElement,
+    textarea: HTMLTextAreaElement
+  ) {
     cardComposer.classList.remove('is-hidden');
     addCardBtn.classList.add('is-hidden');
     textarea.focus();
@@ -162,12 +229,4 @@ export class ListComponent implements OnInit {
     cardComposer.classList.add('is-hidden');
     addCardBtn.classList.remove('is-hidden');
   }
-
-  openDialog(
-    cardContent: string,
-    cardTitle: string,
-    cardId: string,
-    item,
-    TodoId
-  ) {}
 }
