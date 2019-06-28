@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 
 import { DialogContentComponent } from '../dialog-content/dialog-content.component';
 
-import { List } from 'src/app/core/interface/list.interface';
+import { List, Card } from 'src/app/core/interface/list.interface';
 
 @Component({
   selector: 'app-trello',
@@ -149,7 +149,7 @@ export class TrelloComponent implements OnInit {
 
   // List 삭제
   removeList(listId: number) {
-    this.lists = this.lists.filter(({ id }) => listId !== id);
+    this.http.delete(this.appUrl + `title/${listId}/`).subscribe(() => this.lists = this.lists.filter(({ id }) => listId !== id));
   }
 
   // 카드 생성
@@ -157,34 +157,30 @@ export class TrelloComponent implements OnInit {
     if (!cardInput.value.trim()) {
       return;
     }
-    this.lists = this.lists.map(list => {
+    let newCardSort = 0;
+    this.lists.forEach(list => {
       if (+cardInput.id === list.id) {
-        const newCardSort = list.cards.length
-          ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) + 1
-          : 1;
-        return {
-          ...list,
-          cards: [
-            ...list.cards,
-            {
-              title: 1,
-              cardSort: newCardSort,
-              id: 100,
-              cardTitle: cardInput.value,
-              description: '',
-              comments: []
-            }
-          ]
-        };
-      } else {
-        return list;
+        newCardSort = list.cards.length ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) : 0;
       }
+    });
+    this.http.post(this.appUrl+'card/',{
+      title: +cardInput.id,
+      cardSort: newCardSort,
+      cardTitle: cardInput.value
+    }).subscribe((card: Card) => {
+      this.lists = this.lists.map(list => {
+        if (+cardInput.id === list.id) {
+          return { ...list, cards: [ ...list.cards, card ]};
+        } else {
+          return list;
+        }
+      });
     });
   }
 
   // 카드 삭제
   removeCard(listId: number, removeCardId: number) {
-    this.lists = this.lists.map(list => {
+    const removeCard = this.lists = this.lists.map(list => {
       if (listId === list.id) {
         const newCard = list.cards.filter(({ id }) => removeCardId !== id);
         return { ...list, cards: [...newCard] };
@@ -192,6 +188,7 @@ export class TrelloComponent implements OnInit {
         return list;
       }
     });
+    this.http.delete(this.appUrl+`card/${removeCardId}/`).subscribe(() => removeCard);
   }
 
   removeSnackBar(listId: number, removeCardId: number, card = false) {

@@ -7,7 +7,7 @@ export interface List {
 
 export interface Card {
   title: number;
-  id: number;
+  id?: number;
   cardTitle: string;
   description: string | null;
   comments: Array<Comment>;
