@@ -1,2 +1,3 @@
-<app-header></app-header>
+<app-header [colors]="colors" [colorBoolean]="colorBoolean" (changeBgColor)="changeBgColor($event)"
+  (bgColorState)="colorBoolean = $event"></app-header>
 <app-list></app-list>
