@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 
 import { DialogContentComponent } from '../dialog-content/dialog-content.component';
 
-import { List } from 'src/app/core/interface/list.interface';
+import { List, Card } from 'src/app/core/interface/list.interface';
 
 @Component({
   selector: 'app-trello',
@@ -34,23 +34,35 @@ export class TrelloComponent implements OnInit {
     private http: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.getBgColor();
-    this.getTodos();
+    this.getLists();
   }
 
   getBgColor() {
-    this.http.get(this.appUrl + 'backgroundcolors/1')
-      .subscribe(backColor => this.renderer.setStyle(document.body, 'background-color', backColor['background_color']));
+    this.http
+      .get(this.appUrl + 'backgroundcolors/1')
+      .subscribe(backColor =>
+        this.renderer.setStyle(
+          document.body,
+          'background-color',
+          backColor['background_color']
+        )
+      );
   }
 
   changeBgColor(color: BgColors) {
     this.colorBoolean = !this.colorBoolean;
-    this.http.patch(this.appUrl + 'backgroundcolors/1', { background_color: color })
+    this.http
+      .patch(this.appUrl + 'backgroundcolors/1', { background_color: color })
       .subscribe(backColor =>
-        this.renderer.setStyle(document.body, 'background-color', backColor['background_color'])
+        this.renderer.setStyle(
+          document.body,
+          'background-color',
+          backColor['background_color']
+        )
       );
   }
 
@@ -58,9 +70,11 @@ export class TrelloComponent implements OnInit {
     moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
     this.lists = this.lists.map((list, listSort) => {
       if (list.listSort !== listSort) {
-        this.http.patch(`${this.appUrl}title/${list.id}/`, {
-          listSort
-        }).subscribe();
+        this.http
+          .patch(`${this.appUrl}title/${list.id}/`, {
+            listSort
+          })
+          .subscribe();
       }
       return { ...list, listSort };
     });
@@ -76,9 +90,11 @@ export class TrelloComponent implements OnInit {
       this.lists = this.lists.map(list => {
         if (+event.container.id === list.id) {
           const cards = list.cards.map((card, cardSort) => {
-            this.http.patch(`${this.appUrl}card/${card.id}/`, {
-              cardSort
-            }).subscribe();
+            this.http
+              .patch(`${this.appUrl}card/${card.id}/`, {
+                cardSort
+              })
+              .subscribe();
             return { ...card, cardSort };
           });
           return { ...list, cards };
@@ -96,18 +112,22 @@ export class TrelloComponent implements OnInit {
       this.lists = this.lists.map(list => {
         if (+event.previousContainer.id === list.id) {
           const cards = list.cards.map((card, cardSort) => {
-            this.http.patch(`${this.appUrl}card/${card.id}/`, {
-              cardSort
-            }).subscribe();
+            this.http
+              .patch(`${this.appUrl}card/${card.id}/`, {
+                cardSort
+              })
+              .subscribe();
             return { ...card, cardSort };
           });
           return { ...list, cards };
         } else if (+event.container.id === list.id) {
           const cards = list.cards.map((card, cardSort) => {
-            this.http.patch(`${this.appUrl}card/${card.id}/`, {
-              cardSort,
-              title: event.container.id
-            }).subscribe();
+            this.http
+              .patch(`${this.appUrl}card/${card.id}/`, {
+                cardSort,
+                title: event.container.id
+              })
+              .subscribe();
             return { ...card, cardSort };
           });
           return { ...list, cards };
@@ -118,7 +138,7 @@ export class TrelloComponent implements OnInit {
     }
   }
 
-  getTodos() {
+  getLists() {
     this.http
       .get<List[]>('http://clonetrelloapi.jinukk.me/main/')
       .subscribe(lists => (this.lists = lists));
@@ -252,24 +272,35 @@ export class TrelloComponent implements OnInit {
     addCardBtn.classList.remove('is-hidden');
   }
 
+  getCard(cardId: number) {
+    // this.http.get(`${this.appUrl}card/${cardId}`).subscribe((card: Card) => {
+
+    this.openDialog(
+      // card.description,
+      // card.cardTitle,
+      cardId
+      // card.title,
+      // card.comments
+    );
+    // });
+  }
+
   openDialog(
-    description: string,
-    title: string,
-    cardId: string,
-    card,
-    listId,
-    comments
+    // description: string,
+    // title: string,
+    cardId: number
+    // listId,
+    // comments
   ) {
     const dialogRef = this.dialog.open(DialogContentComponent, {
       height: '800px',
       width: '570px',
       data: {
-        content: description,
-        title,
-        id: cardId,
-        card,
-        listId,
-        comment: comments
+        // content: description,
+        // title,
+        cardId
+        // listId,
+        // comment: comments
       }
     });
 
@@ -292,7 +323,6 @@ export class TrelloComponent implements OnInit {
 
     const adding = dialogRef.componentInstance.changeCardContent.subscribe(
       (data: any) => {
-        console.log(data);
         this.lists = this.lists.map(item => {
           if (item.id === data.listId) {
             let cards = item.cards.map(item2 => {
@@ -310,8 +340,8 @@ export class TrelloComponent implements OnInit {
       }
     );
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.afterClosed().subscribe(() => {
+      this.getLists();
     });
   }
 }
