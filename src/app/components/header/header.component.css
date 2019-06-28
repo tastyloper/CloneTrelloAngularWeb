@@ -12,7 +12,18 @@ mat-toolbar .logo {
   opacity: .5;
 }
 
-/* 백그라운드 색상 변경 */
+/* board title */
+.board-title-wrap {
+  padding: 8px;
+}
+.board-title {
+  padding: 0 12px;
+  color: #FFF;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 백그라운드 색상 변경 박스*/
 .bg-change-btn{
   position: absolute;
   right: 16px;
@@ -34,11 +45,9 @@ mat-toolbar .logo {
   white-space: nowrap;
   outline: none;
 }
-
 .bg-change-btn:hover {
   background-color: rgba(9,30,66,.04);
 }
-
 .bg-change-box {
   position: absolute;
   top: 50px;
@@ -51,7 +60,7 @@ mat-toolbar .logo {
   z-index: 99;
 }
 
-
+/* 백그라운드 색상 변경 */
 .color-picker {
   content: '';
   display: inline-block;
@@ -63,7 +72,6 @@ mat-toolbar .logo {
   margin: 7px 4px 2px 7px;
   cursor: pointer;
 }
-
 .color-picker:hover {
   opacity: .7;
 }
