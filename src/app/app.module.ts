@@ -11,7 +11,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { TrelloComponent } from './components/trello/trello.component';
 import { HeaderComponent } from './components/header/header.component';
-import { ListComponent } from './components/list/list.component';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
 
 @NgModule({
@@ -19,7 +18,6 @@ import { DialogContentComponent } from './components/dialog-content/dialog-conte
     AppComponent,
     TrelloComponent,
     HeaderComponent,
-    ListComponent,
     DialogContentComponent
   ],
   imports: [
