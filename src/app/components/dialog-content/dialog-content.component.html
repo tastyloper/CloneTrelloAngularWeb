@@ -5,11 +5,10 @@
     <br />
     <input
       value="{{ cardService.card.cardTitle }}"
-      #titleInput
       class="titleInput"
       id="title"
       #titleInput
-      (focusout)="changeTitle(titleInput, cardService.card.id)"
+      (blur)="changeTitle(titleInput, cardService.card.id)"
     />
   </h1>
   <mat-dialog-content class="mat-typography">
@@ -22,7 +21,7 @@
       #descriptionInput
       value="{{ cardService.card.description }}"
       (focusin)="changeDescriptionState(descriptionInput)"
-      (focusout)="changeDescriptionState(descriptionInput)"
+      (blur)="changeDescriptionState(descriptionInput)"
       (keyup)="titleResize(descriptionInput)"
       (keyup)="
         changeContent(
@@ -90,8 +89,8 @@
         <i class="fa fa-times" aria-hidden="true"></i>
       </button>
       <div>
-        <span class="editDelete" (click)="flag = comment.id">Edit</span>
-        <span class="editDelete" (click)="activityEditDelete(comment.id)"
+        <span class="editDelete" *ngIf="comment.id !== flag" (click)="flag = comment.id">Edit</span>
+        <span class="editDelete" *ngIf="comment.id !== flag" (click)="activityEditDelete(comment.id)"
           >Delete</span
         >
       </div>

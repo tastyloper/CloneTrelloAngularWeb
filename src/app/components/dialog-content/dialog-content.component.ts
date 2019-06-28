@@ -115,6 +115,7 @@ export class DialogContentComponent implements OnInit {
         card: cardId
       })
       .subscribe(() => this.getCards());
+    inputComment.value = '';
   }
 
   activityEditSave(activityEdit: HTMLTextAreaElement, commentID: number) {
@@ -123,6 +124,7 @@ export class DialogContentComponent implements OnInit {
         comment: activityEdit.value
       })
       .subscribe(() => this.getCards());
+    this.flag = 0;
   }
 
   activityEditDelete(commentID: number) {

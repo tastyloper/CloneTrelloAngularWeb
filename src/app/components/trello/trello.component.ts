@@ -150,7 +150,7 @@ export class TrelloComponent implements OnInit {
 
   generateListSort() {
     return this.lists.length
-      ? Math.max(...this.lists.map(({ listSort }) => listSort))
+      ? Math.max(...this.lists.map(({ listSort }) => listSort)) + 1
       : 0;
   }
 
@@ -181,7 +181,7 @@ export class TrelloComponent implements OnInit {
     let newCardSort = 0;
     this.lists.forEach(list => {
       if (+cardInput.id === list.id) {
-        newCardSort = list.cards.length ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) : 0;
+        newCardSort = list.cards.length ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) + 1 : 0;
       }
     });
     this.http.post(`${this.appUrl}card/`, {
