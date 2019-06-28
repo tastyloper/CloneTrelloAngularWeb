@@ -140,7 +140,7 @@ export class TrelloComponent implements OnInit {
     }
     this.http
       .post<List>(this.appUrl + 'title/', {
-        title: input.value,
+        title: input.value.trim(),
         listSort: this.generateListSort()
       })
       .subscribe(list => (this.lists = [...this.lists, list]));
@@ -154,7 +154,8 @@ export class TrelloComponent implements OnInit {
 
   // 카드 생성
   addCardTitle(cardInput: HTMLTextAreaElement) {
-    if (!cardInput.value.trim()) {
+    const value = cardInput.value.trim();
+    if (!value) {
       return;
     }
     let newCardSort = 0;
@@ -163,10 +164,10 @@ export class TrelloComponent implements OnInit {
         newCardSort = list.cards.length ? Math.max(...list.cards.map(({ cardSort }) => cardSort)) : 0;
       }
     });
-    this.http.post(this.appUrl+'card/',{
+    this.http.post(`${this.appUrl}card/`, {
       title: +cardInput.id,
       cardSort: newCardSort,
-      cardTitle: cardInput.value
+      cardTitle: value
     }).subscribe((card: Card) => {
       this.lists = this.lists.map(list => {
         if (+cardInput.id === list.id) {
@@ -188,7 +189,7 @@ export class TrelloComponent implements OnInit {
         return list;
       }
     });
-    this.http.delete(this.appUrl+`card/${removeCardId}/`).subscribe(() => removeCard);
+    this.http.delete(`${this.appUrl}card/${removeCardId}/`).subscribe(() => removeCard);
   }
 
   removeSnackBar(listId: number, removeCardId: number, card = false) {
@@ -222,8 +223,15 @@ export class TrelloComponent implements OnInit {
     textarea.focus();
   }
 
-  changeTitleEnd(elem: HTMLDivElement) {
-    elem.classList.remove('is-hidden');
+  changeTitleEnd(elem: HTMLTextAreaElement, block: HTMLDivElement) {
+    const title = elem.value.trim();
+    if (!title) {
+      return;
+    }
+    block.classList.remove('is-hidden');
+    this.http.patch<List>(`${this.appUrl}title/${elem.id}/`, {
+      title
+    }).subscribe(() => this.lists = this.lists.map(list => list.id === +elem.id ? { ...list, title } : list));
   }
 
   verticalPlaceholderHeight(elem: HTMLDivElement) {
@@ -273,7 +281,7 @@ export class TrelloComponent implements OnInit {
     const sub = dialogRef.componentInstance.onAdd.subscribe((data: any) => {
       this.lists = this.lists.map(item => {
         if (item.id === data.listId) {
-          let cards = item.cards.map(item2 => {
+          const cards = item.cards.map(item2 => {
             if (item2.id === +data.id) {
               return { ...item2, cardContent: data.cardContent };
             } else {
@@ -289,10 +297,9 @@ export class TrelloComponent implements OnInit {
 
     const adding = dialogRef.componentInstance.changeCardContent.subscribe(
       (data: any) => {
-        console.log(data);
         this.lists = this.lists.map(item => {
           if (item.id === data.listId) {
-            let cards = item.cards.map(item2 => {
+            const cards = item.cards.map(item2 => {
               if (item2.id === +data.id) {
                 return { ...item2, cardContent: data.descriptionInput };
               } else {

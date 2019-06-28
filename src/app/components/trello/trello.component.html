@@ -12,7 +12,8 @@
               <div class="vertical-list-header-target" (click)="changeTitle(verticalListHeaderTarget, titleTextarea)"
                   (mousedown)="verticalPlaceholderHeight(verticalContainer)" #verticalListHeaderTarget></div>
               <textarea class="vertical-list-title" spellcheck="false" maxlength="512" (keyup)="titleResize(titleTextarea)"
-                        (focusout)="changeTitleEnd(verticalListHeaderTarget)" #titleTextarea>{{list.title}}</textarea>
+                        (keyup.enter)="changeTitleEnd(titleTextarea, verticalListHeaderTarget)" id="{{ list.id }}"
+                        (blur)="changeTitleEnd(titleTextarea, verticalListHeaderTarget)" #titleTextarea>{{list.title}}</textarea>
               <a href="#" class="delete-btn" (click)="removeSnackBar(list.id)"><i class="fa fa-trash-o"></i></a>
             </div>
             <div cdkDropList [cdkDropListData]="list.cards" id={{list.id}} class="vertical-list"
@@ -27,6 +28,7 @@
               <div class="card-composer is-hidden" #cardComposer>
                 <div class="vertical-box">
                   <textarea class="list-card-composer-textarea" placeholder="Enter a title for this card…"
+                            (keyup)="titleResize(listCardComposerTextarea)" spellcheck="false"
                             (keyup.enter)="addCardTitle(listCardComposerTextarea)" id="{{list.id}}" #listCardComposerTextarea></textarea>
                 </div>
                 <a href="#" class="add-btn" (click)="addCardTitle(listCardComposerTextarea)">Add Card</a>

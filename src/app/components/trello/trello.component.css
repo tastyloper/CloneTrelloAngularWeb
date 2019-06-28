@@ -155,6 +155,7 @@
   background-color: #FFF;
 }
 .list-card-composer-textarea {
+  overflow: hidden;
   width: 100%;
   background: transparent;
   border: none;
