@@ -16,7 +16,7 @@
     (focusin)="changeDescriptionState(descriptionInput)"
     (focusout)="changeDescriptionState(descriptionInput)"
     (keyup)="titleResize(descriptionInput)"
-    (keyup)="changeContent(descriptionInput, data.id, data.item, data.TodoId)"
+    (keyup)="changeContent(descriptionInput, data.id, data.card, data.listId)"
     placeholder="Add a more detailed description…"
     autofocus
   >
@@ -91,8 +91,8 @@
           descriptionInput,
           inputComment,
           cardId,
-          data.item,
-          data.TodoId,
+          data.card,
+          data.listId,
           titleInput
         )
       "

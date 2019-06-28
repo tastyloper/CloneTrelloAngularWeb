@@ -25,25 +25,25 @@ export class DialogContentComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  sendData(
-    cardContent: HTMLInputElement,
-    inputComment: HTMLInputElement,
-    cardId,
-    wholeItem,
-    TodoID,
-    titleInput
-  ) {
-    console.log(inputComment.value);
-    this.updateData = {
-      cardContent: cardContent.value,
-      commentContent: inputComment.value,
-      cardId: cardId.innerHTML,
-      Item: wholeItem,
-      TodosID: TodoID,
-      title: titleInput.value
-    };
-    this.onAdd.emit(this.updateData);
-  }
+  // sendData(
+  //   cardContent: HTMLInputElement,
+  //   inputComment: HTMLInputElement,
+  //   cardId,
+  //   wholeItem,
+  //   TodoID,
+  //   titleInput
+  // ) {
+  //   console.log(inputComment.value);
+  //   this.updateData = {
+  //     cardContent: cardContent.value,
+  //     commentContent: inputComment.value,
+  //     cardId: cardId.innerHTML,
+  //     Item: wholeItem,
+  //     TodosID: TodoID,
+  //     title: titleInput.value
+  //   };
+  //   this.onAdd.emit(this.updateData);
+  // }
 
   changeDescriptionState() {
     setTimeout(() => {
