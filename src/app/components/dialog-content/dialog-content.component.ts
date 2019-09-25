@@ -1,135 +1,103 @@
-import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { Card } from 'src/app/core/interface/list.interface';
-import { CardService } from 'src/app/core/service/card.service';
+
+import { CardService } from '../../core/service/card.service';
+
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dialog-content',
   templateUrl: './dialog-content.component.html',
   styleUrls: ['./dialog-content.component.css']
 })
-export class DialogContentComponent implements OnInit {
+export class DialogContentComponent {
   appUrl: string = environment.appUrl;
   updateData = {};
   updateData2 = {};
   onAdd = new EventEmitter();
   changeCardContent = new EventEmitter();
 
-  descriptionState = true;
-  valueTrue = false;
-  flag = 0;
+  descriptionState = false;
+  flag = -1;
 
   constructor(
-    public dialogRef: MatDialogRef<DialogContentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { cardId: number },
-    private http: HttpClient,
+    public dialogRef: MatDialogRef<DialogContentComponent>,
     public cardService: CardService
   ) {}
 
-  ngOnInit() {
-    this.getCards();
+  /**
+   * card title 변경 메소드
+   * @param {HTMLInputElement} titleInput
+   * @return {undefined}
+   */
+  changeTitle(titleInput: HTMLInputElement): any {
+    if (!titleInput.value.trim()) { return; }
+    this.cardService.card.cardTitle = titleInput.value;
   }
 
-  getCards() {
-    this.http
-      .get(`${this.appUrl}card/${this.data.cardId}/`)
-      .subscribe((card: Card) => {
-        console.log(card);
-        this.cardService.card = { ...card, id: this.data.cardId };
-      });
+  /**
+   * card Description 변경 메소드
+   * @param {HTMLInputElement} titleInput
+   * @return {undefined}
+   */
+  changeDescription(textarea: HTMLTextAreaElement): any {
+    this.cardService.card.description = textarea.value;
   }
 
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-  // sendData(
-  //   cardContent: HTMLInputElement,
-  //   inputComment: HTMLInputElement,
-  //   cardId,
-  //   wholeItem,
-  //   TodoID,
-  //   titleInput
-  // ) {
-  //   console.log(inputComment.value);
-  //   this.updateData = {
-  //     cardContent: cardContent.value,
-  //     commentContent: inputComment.value,
-  //     cardId: cardId.innerHTML,
-  //     Item: wholeItem,
-  //     TodosID: TodoID,
-  //     title: titleInput.value
-  //   };
-  //   this.onAdd.emit(this.updateData);
-  // }
-
-  changeDescriptionState() {
-    setTimeout(() => {
-      this.descriptionState
-        ? (this.descriptionState = false)
-        : (this.descriptionState = true);
-    }, 100);
-  }
-
-  changeContent(descriptionInput, cardID, wholeItem, TodoID) {
-    this.updateData2 = {
-      descriptionInput: descriptionInput.value,
-      cardId: cardID,
-      Item: wholeItem,
-      TodosID: TodoID
-    };
-    this.changeCardContent.emit(this.updateData2);
-  }
-
-  typing(inputComment) {
-    inputComment.value ? (this.valueTrue = true) : (this.valueTrue = false);
-  }
-
-  titleResize(textarea: HTMLTextAreaElement) {
+  /**
+   * textarea 글씨 입력 시 자동으로 높이 증가하는 메소드
+   * @param {HTMLTextAreaElement} textarea
+   * @return {undefined}
+   */
+  textareaResize(textarea: HTMLTextAreaElement): any {
     textarea.style.height = '1px';
     textarea.style.height = `${textarea.scrollHeight}px`;
   }
 
-  clickDescriptionBtn(descriptionInput: HTMLTextAreaElement, cardId: number) {
-    this.http
-      .patch(`${this.appUrl}card/${cardId}/`, {
-        description: descriptionInput.value
-      })
-      .subscribe(() => this.getCards());
+  /**
+   * 댓글을 추가할 때 댓글 id중 가장 큰수를 찾아 1을 더해 리턴해주는 메소드
+   * @return {number}
+   */
+  generateCommentId(): number {
+    return this.cardService.card.comments.length ? Math.max(...this.cardService.card.comments.map(({ id }) => id)) + 1 : 0;
   }
 
-  changeTitle(titleInput: HTMLInputElement, cardId: number) {
-    this.http
-      .patch(`${this.appUrl}card/${cardId}/`, {
-        cardTitle: titleInput.value
-      })
-      .subscribe(() => this.getCards());
-  }
-
-  addComment(inputComment: HTMLInputElement, cardId: number) {
-    this.http
-      .post(`${this.appUrl}comments/`, {
-        comment: inputComment.value,
-        card: cardId
-      })
-      .subscribe(() => this.getCards());
+  /**
+   * 댓글 추가 메소드
+   * @param {HTMLInputElement} inputComment
+   * @return {undefined}
+   */
+  addComment(inputComment: HTMLInputElement): any {
+    if (!inputComment.value.trim()) { return; }
+    this.cardService.card.comments = [...this.cardService.card.comments, {
+      id: this.generateCommentId(),
+      comment: inputComment.value,
+      card: this.cardService.card.id,
+    }];
     inputComment.value = '';
   }
 
+  /**
+   * 댓글 수정 메소드
+   * @param {HTMLTextAreaElement} activityEdit
+   * @param {number} commentID
+   * @return {undefined}
+   */
   activityEditSave(activityEdit: HTMLTextAreaElement, commentID: number) {
-    this.http
-      .patch(`${this.appUrl}comments/${commentID}/`, {
-        comment: activityEdit.value
-      })
-      .subscribe(() => this.getCards());
-    this.flag = 0;
+    if (!activityEdit.value.trim()) { return; }
+    this.cardService.card.comments = this.cardService.card.comments.map(comment => {
+      return comment.id === commentID ? { ...comment, comment: activityEdit.value } : comment;
+    });
+    this.flag = -1;
   }
 
+  /**
+   * 댓글 삭제 메소드
+   * @param {number} commentID
+   * @return {undefined}
+   */
   activityEditDelete(commentID: number) {
-    this.http
-      .delete(`${this.appUrl}comments/${commentID}/`)
-      .subscribe(() => this.getCards());
+    this.cardService.card.comments = this.cardService.card.comments.filter(v => v.id !== commentID);
   }
 }
