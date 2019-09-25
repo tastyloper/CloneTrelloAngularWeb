@@ -8,20 +8,24 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import { AppComponent } from './app.component';
 import { TrelloComponent } from './components/trello/trello.component';
 import { HeaderComponent } from './components/header/header.component';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
+
 import { CardService } from './core/service/card.service';
 
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ClickOutSideDirective } from './core/directive/click-out-side.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     TrelloComponent,
     HeaderComponent,
-    DialogContentComponent
+    DialogContentComponent,
+    ClickOutSideDirective
   ],
   imports: [
     BrowserModule,
@@ -32,7 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatDialogModule,
     MatSnackBarModule,
     HttpClientModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   entryComponents: [TrelloComponent, DialogContentComponent],
   providers: [CardService],
